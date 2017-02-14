@@ -42,15 +42,20 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
         (*reporter->finish_test)(reporter, test->filename, test->line, NULL, 0);
         return;
     }
+#ifndef CGREEN_NO_PROCESS_SPAWN
     if (in_child_process()) {
+#endif
         run_the_test_code(suite, test, reporter);
         send_reporter_completion_notification(reporter);
+#ifndef CGREEN_NO_PROCESS_SPAWN
         stop();
     }
     // in parent process
     const int status = wait_for_child_process();
+#endif
     uint32_t test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
                                                                   cgreen_time_get_current_milliseconds());
+#ifndef CGREEN_NO_PROCESS_SPAWN
     if (WIFSIGNALED(status)) {
         /* a C++ exception generates SIGABRT. Only print our special message for other signals. */
         const int sig = WTERMSIG(status);
@@ -61,6 +66,7 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
             return;
         }
     }
+#endif
 
     (*reporter->finish_test)(reporter, test->filename, test->line, NULL, test_duration);
 }

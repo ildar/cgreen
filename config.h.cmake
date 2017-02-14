@@ -26,3 +26,6 @@
 /* Define if building with gcov instrumentation */
 #cmakedefine CGREEN_INTERNAL_WITH_GCOV
 
+/* Define if want to not spawn child processes for tests */
+#cmakedefine CGREEN_NO_PROCESS_SPAWN
+
